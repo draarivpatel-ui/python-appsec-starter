@@ -184,6 +184,15 @@ class SignedCookieTests(unittest.TestCase):
         with self.assertRaises(CookieSecurityError):
             verify_signed_cookie(token, SECRET, max_age_seconds=10, now=950)
 
+    def test_noncanonical_base64_trailing_bits_rejected(self):
+        token = sign_cookie_value("session-value", SECRET, timestamp=1000)
+        alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
+        last = token[-1]
+        replacement = alphabet[alphabet.index(last) ^ 1]
+        noncanonical = token[:-1] + replacement
+        with self.assertRaises(CookieSecurityError):
+            verify_signed_cookie(noncanonical, SECRET, now=1001)
+
     def test_malformed_token_rejected(self):
         with self.assertRaises(CookieSecurityError):
             verify_signed_cookie("not-a-token", SECRET)

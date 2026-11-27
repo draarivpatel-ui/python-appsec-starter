@@ -34,9 +34,12 @@ def _b64decode(value: str, code: str) -> bytes:
         raise CookieSecurityError("signed cookie encoding is invalid", code)
     padding = "=" * ((4 - len(value) % 4) % 4)
     try:
-        return base64.urlsafe_b64decode((value + padding).encode("ascii"))
+        decoded = base64.urlsafe_b64decode((value + padding).encode("ascii"))
     except (ValueError, TypeError) as exc:
         raise CookieSecurityError("signed cookie encoding is invalid", code) from exc
+    if _b64encode(decoded) != value:
+        raise CookieSecurityError("signed cookie encoding is not canonical", code)
+    return decoded
 
 
 def validate_cookie_name(name: str) -> str:
