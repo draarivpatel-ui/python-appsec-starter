@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+.DS_Store
+sentinel-*.sarif

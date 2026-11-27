@@ -1,0 +1,27 @@
+name: Feature request
+description: Propose a small security improvement or template enhancement
+title: "feature: "
+labels: ["enhancement", "triage"]
+body:
+  - type: input
+    id: control
+    attributes:
+      label: Security control
+      description: Which control or developer workflow would improve?
+      placeholder: upload filename policy
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: Describe the smallest useful change and its security tradeoff.
+    validations:
+      required: true
+  - type: textarea
+    id: tests
+    attributes:
+      label: Test plan
+      description: What adversarial regression test should be added?
+    validations:
+      required: true

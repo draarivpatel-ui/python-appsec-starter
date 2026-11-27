@@ -1,0 +1,38 @@
+name: Bug report
+description: Report a reproducible correctness or security-control defect
+title: "bug: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include secrets, private tokens, or personal data. For vulnerabilities, use private security reporting instead.
+  - type: input
+    id: area
+    attributes:
+      label: Area
+      description: Which control, endpoint, adapter, or test is affected?
+      placeholder: query firewall
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction
+      description: Include exact input and expected versus actual behavior.
+      placeholder: PYTHONPATH=src python3 ...
+    validations:
+      required: true
+  - type: input
+    id: python-version
+    attributes:
+      label: Python version
+      placeholder: 3.12
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Security impact
+      description: Does this weaken a security boundary? If yes, explain without exploit detail beyond what is needed.
+    validations:
+      required: true
