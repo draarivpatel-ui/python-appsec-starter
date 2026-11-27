@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import re
 import subprocess
 import unittest
 from pathlib import Path
@@ -16,14 +17,15 @@ FORBIDDEN_BYTES = [
     bytes([0xE2, 0x80, 0x93]),
     joined(b"/", b"Users", b"/"),
     joined(b"Co", b"-Authored", b"-By", b":"),
-    joined(b"someone", b"@", b"gmail", b".com"),
-    joined(b"handle-redacted286", b"@", b"gmail", b".com"),
-    joined(b"5019 ", b"Exampleton"),
-    joined(b"gh", b"p_"),
-    joined(b"github", b"_pat_"),
-    joined(b"sk", b"-"),
-    joined(b"AK", b"IA"),
-    joined(b"xox", b"b-"),
+]
+
+FORBIDDEN_PATTERNS = [
+    ("email-shaped text", re.compile(rb"\b[A-Za-z0-9._%+-]+@(?!(?:[A-Za-z0-9-]+\.)*(?:example\.(?:com|net|org)|example|invalid|test|localhost|internal)\b)[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")),
+    ("gaming-handle-shaped text", re.compile(rb"\bhandle[-_][A-Za-z0-9_-]*[0-9]{2,}\b", re.IGNORECASE)),
+    ("street-address-shaped text", re.compile(rb"\b\d{1,6}\s+[A-Za-z0-9.'-]+(?:\s+[A-Za-z0-9.'-]+){0,3}\s(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Lane|Ln|Boulevard|Blvd|Court|Ct)\b")),
+    ("town-shaped proper name", re.compile(rb"\b[A-Z][a-z]+(?:ton|ville|burg|boro|field|wood|ford|shire)\b")),
+    ("school-name-shaped text", re.compile(rb"\b[A-Z][A-Za-z]+(?:\s+[A-Z][A-Za-z]+){0,3}\s+(?:High School|Middle School|Elementary School|Academy)\b")),
+    ("vendor-shaped credential material", re.compile(rb"ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9_-]{8,}|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9-]+|gsk_[A-Za-z0-9_-]+|nvapi-[A-Za-z0-9_-]+|tvly-[A-Za-z0-9_-]+|AIza[0-9A-Za-z_-]{20,}|tskey-[A-Za-z0-9_-]+|whsec_[A-Za-z0-9+/=]+")),
 ]
 
 
@@ -43,13 +45,17 @@ class RepositoryHygieneTests(unittest.TestCase):
         self.assertIn(Path("README.md"), files)
         self.assertIn(Path("src/appsec_starter/__init__.py"), files)
 
-    def test_no_forbidden_bytes_in_tracked_files(self):
+    def test_no_forbidden_bytes_or_sensitive_patterns_in_tracked_files(self):
         violations = []
         for relative in tracked_files():
             data = tracked_bytes(relative)
             for forbidden in FORBIDDEN_BYTES:
                 if forbidden in data:
-                    violations.append(str(relative))
+                    violations.append(str(relative) + ": fixed forbidden bytes")
+                    break
+            for label, pattern in FORBIDDEN_PATTERNS:
+                if pattern.search(data):
+                    violations.append(str(relative) + ": " + label)
                     break
         self.assertEqual([], violations)
 
