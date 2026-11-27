@@ -1,6 +1,6 @@
 # Python AppSec Starter
 
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/draarivpatel-ui/python-appsec-starter/badge)](https://securityscorecards.dev/viewer/?uri=github.com/draarivpatel-ui/python-appsec-starter)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/draarivpatel-ui/python-appsec-starter/badge)](https://scorecard.dev/viewer/?uri=github.com/draarivpatel-ui/python-appsec-starter)
 
 A zero-dependency Python 3.9+ security starter and GitHub template for small production web services. It ships a runnable stdlib WSGI application, a `http.server` adapter, strict security middleware, adversarial regression tests, and clean opt-in adapters for Flask, Django, FastAPI, and any ASGI application.
 
