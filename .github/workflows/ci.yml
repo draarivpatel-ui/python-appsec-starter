@@ -34,7 +34,7 @@ jobs:
         run: |
           PYTHONPATH=src python3 -c "import appsec_starter; import examples.run_wsgi; import examples.run_http_server"
       - name: Install build tooling
-        run: python3 -m pip install build
+        run: python3 -m pip install --require-hashes -r .github/requirements-build.txt
       - name: Build source and wheel distributions
         run: python3 -m build
       - name: Verify distribution contents
