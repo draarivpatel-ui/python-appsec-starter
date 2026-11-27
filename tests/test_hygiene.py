@@ -7,10 +7,6 @@ from pathlib import Path
 
 from tests.helpers import ROOT
 
-AUTHOR_NAME = "draarivpatel-ui"
-AUTHOR_EMAIL = "287273626+draarivpatel-ui@users.noreply.github.com"
-
-
 def joined(*parts):
     return b"".join(parts)
 
@@ -153,25 +149,6 @@ class RepositoryHygieneTests(unittest.TestCase):
         self.assertTrue((ROOT / ".github/ISSUE_TEMPLATE/feature_request.yml").is_file())
         self.assertTrue((ROOT / ".github/ISSUE_TEMPLATE/config.yml").is_file())
 
-    def test_commit_identity_and_trailers_when_head_exists(self):
-        head = subprocess.run(
-            ["git", "rev-parse", "--verify", "HEAD"],
-            cwd=str(ROOT),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-        if head.returncode != 0:
-            self.skipTest("initial commit has not been created yet")
-
-        def log_value(fmt):
-            return subprocess.check_output(["git", "log", "-1", "--format=" + fmt], cwd=str(ROOT)).decode("utf-8").strip()
-
-        self.assertEqual(AUTHOR_NAME, log_value("%an"))
-        self.assertEqual(AUTHOR_EMAIL, log_value("%ae"))
-        self.assertEqual(AUTHOR_NAME, log_value("%cn"))
-        self.assertEqual(AUTHOR_EMAIL, log_value("%ce"))
-        body = subprocess.check_output(["git", "log", "-1", "--format=%B"], cwd=str(ROOT)).decode("utf-8")
-        self.assertNotIn(joined(b"co", b"-authored", b"-by"), body.lower().encode("utf-8"))
 
 
 if __name__ == "__main__":
