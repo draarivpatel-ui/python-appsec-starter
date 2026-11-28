@@ -8,27 +8,30 @@ import sys
 import tempfile
 import unittest
 
+from contextlib import nullcontext
+
 try:
     import atheris
 except ImportError:
     atheris = None
 
-from appsec_starter import (
-    JsonLimits,
-    assert_safe_redirect,
-    audit_query,
-    inspect_filename,
-    inspect_json_bytes,
-    is_safe_redirect,
-    parse_json_bytes,
-    parse_query_params,
-    redact_log_text,
-    resolve_within_root,
-    safe_log_json,
-    sign_cookie_value,
-    validate_outbound_url,
-    verify_signed_cookie,
-)
+with (atheris.instrument_imports(include=["appsec_starter"]) if atheris is not None else nullcontext()):
+    from appsec_starter import (
+        JsonLimits,
+        assert_safe_redirect,
+        audit_query,
+        inspect_filename,
+        inspect_json_bytes,
+        is_safe_redirect,
+        parse_json_bytes,
+        parse_query_params,
+        redact_log_text,
+        resolve_within_root,
+        safe_log_json,
+        sign_cookie_value,
+        validate_outbound_url,
+        verify_signed_cookie,
+    )
 from appsec_starter.errors import CookieSecurityError, JsonSecurityError, PathSecurityError, QuerySecurityError, UrlSecurityError
 
 _TOKEN_STRINGS = (
@@ -189,6 +192,9 @@ def exercise(data: bytes) -> None:
     _check_log_and_cookie(text)
     with tempfile.TemporaryDirectory(prefix="appsec-fuzz-") as root:
         _check_filename_and_path(root, text)
+
+
+exercise = atheris.instrument_func(exercise) if atheris is not None else exercise
 
 
 def _seed_bytes(seed: int, length: int = 72) -> bytes:
